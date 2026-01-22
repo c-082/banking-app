@@ -1,3 +1,5 @@
+namespace BankingApp.Models;
+
 class AccountData
 {
     public int AccountNumber { get; set; }

@@ -1,10 +1,11 @@
 using System.Text.Json;
-
+using BankingApp.Models;
+namespace BankingApp.Services;
 class Bank
 {
     private readonly string filePath = "accounts.json";
     readonly List<BankAccount> accounts = [];
-    public static async Task<Bank> CreateAsync()
+    public static async Task<Bank> Create()
     {
         var bank = new Bank();
         var loadedAccounts = await bank.LoadAccounts();

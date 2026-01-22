@@ -1,3 +1,5 @@
+namespace BankingApp.Models;
+
 class CurrentAccount(int accountNumber) : BankAccount(accountNumber)
 {
     private static readonly decimal overdraftLimit = -1000m;
