@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BankingApp.Models;
 namespace BankingApp.Services;
+
 class Bank
 {
     private readonly string filePath = "accounts.json";
@@ -12,7 +13,7 @@ class Bank
         bank.accounts.AddRange(loadedAccounts);
         return bank;
     }
-    
+
     public async Task<int> CreateAccount(AccountType accountType)
     {
         int accountNumber = accounts.Count == 0 ? 1000 : accounts.Max(a => a.AccountNumber) + 1;
@@ -24,8 +25,11 @@ class Bank
     public BankAccount? FindAccount(int accountNumber) => accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
     public async Task<bool> Transfer(BankAccount fromAccount, BankAccount toAccount, decimal amount)
     {
-        if(!fromAccount.Withdraw(amount))
+        if (!fromAccount.Withdraw(amount))
+        {
             return false;
+        }
+
         toAccount.Deposit(amount);
         await SaveAccounts(accounts);
         return true;
@@ -33,7 +37,10 @@ class Bank
     public async Task<bool> ApplyInterest(BankAccount account)
     {
         if (!account.ApplyInterest())
+        {
             return false;
+        }
+
         await SaveAccounts(accounts);
         return true;
     }
@@ -58,8 +65,11 @@ class Bank
     }
     private async Task<List<BankAccount>> LoadAccounts()
     {
-        if(!File.Exists(filePath))
+        if (!File.Exists(filePath))
+        {
             return [];
+        }
+
         var json = await File.ReadAllTextAsync(filePath);
         var data = JsonSerializer.Deserialize<List<AccountData>>(json) ?? [];
         var accounts = new List<BankAccount>();

@@ -6,7 +6,7 @@ Console.WriteLine("""
 =============== BANKING APP ===============
                 ===========
 """);
-while(true)
+while (true)
 {
     Console.WriteLine("""
         1. Create account
@@ -18,7 +18,7 @@ while(true)
         7. Exit
     """);
     Console.Write("Choose: ");
-    switch(Console.ReadKey().KeyChar)
+    switch (Console.ReadKey().KeyChar)
     {
         case '1':
             Console.WriteLine();
@@ -48,8 +48,15 @@ while(true)
             Console.WriteLine();
             var depositBankAccount = GetAccount("your");
             if (depositBankAccount == null)
+            {
                 continue;
+            }
+
             if (!GetAmount("deposit", out decimal depositAmount))
+            {
+                continue;
+            }
+
             depositBankAccount.Deposit(depositAmount);
             Console.WriteLine($"Successfully deposited {depositAmount}");
             break;
@@ -57,9 +64,15 @@ while(true)
             Console.WriteLine();
             var withdrawBankAccount = GetAccount("your");
             if (withdrawBankAccount == null)
+            {
                 continue;
-            if(!GetAmount("withdraw", out decimal withdrawAmount))
+            }
+
+            if (!GetAmount("withdraw", out decimal withdrawAmount))
+            {
                 continue;
+            }
+
             if (!withdrawBankAccount.Withdraw(withdrawAmount))
             {
                 Console.WriteLine("Withdrawal failed");
@@ -71,13 +84,22 @@ while(true)
             Console.WriteLine();
             var senderBankAccount = GetAccount("your");
             if (senderBankAccount == null)
+            {
                 continue;
+            }
+
             var recipientBankAccount = GetAccount("recipient's");
             if (recipientBankAccount == null)
+            {
                 continue;
-            if(!GetAmount("transfer", out decimal transferAmount))
+            }
+
+            if (!GetAmount("transfer", out decimal transferAmount))
+            {
                 continue;
-            if(! await bank.Transfer(senderBankAccount, recipientBankAccount, transferAmount))
+            }
+
+            if (!await bank.Transfer(senderBankAccount, recipientBankAccount, transferAmount))
             {
                 Console.WriteLine("Transfer failed");
                 continue;
@@ -87,16 +109,25 @@ while(true)
             Console.WriteLine();
             var balanceAccount = GetAccount("your");
             if (balanceAccount == null)
+            {
                 continue;
+            }
+
             Console.WriteLine($"Your account balance is {balanceAccount.Balance}");
             break;
         case '6':
             Console.WriteLine();
             var interestAccount = GetAccount("your");
             if (interestAccount == null)
+            {
                 continue;
-            if(! await bank.ApplyInterest(interestAccount))
+            }
+
+            if (!await bank.ApplyInterest(interestAccount))
+            {
                 Console.WriteLine("Interest can only be applied to savings account");
+            }
+
             break;
         case '7':
             return;
@@ -109,23 +140,26 @@ while(true)
 BankAccount? GetAccount(string name)
 {
     Console.WriteLine($"Enter {name} account number");
-        if (!int.TryParse(Console.ReadLine(), out int accountNumber))
-        {
-            Console.WriteLine("Invalid account number");
-            return null;
-        }
-        var bankAccount = bank.FindAccount(accountNumber);
-        if (bankAccount == null)
-            Console.WriteLine("Account number not found");
-        return bankAccount;
+    if (!int.TryParse(Console.ReadLine(), out int accountNumber))
+    {
+        Console.WriteLine("Invalid account number");
+        return null;
+    }
+    var bankAccount = bank.FindAccount(accountNumber);
+    if (bankAccount == null)
+    {
+        Console.WriteLine("Account number not found");
+    }
+
+    return bankAccount;
 }
 static bool GetAmount(string action, out decimal amount)
 {
     Console.WriteLine($"Enter the amount you'd like to {action}");
-        if (!decimal.TryParse(Console.ReadLine(), out amount))
-        {
-            Console.WriteLine($"Invalid {action} amount");
-            return false;
-        }
-        return true;
+    if (!decimal.TryParse(Console.ReadLine(), out amount))
+    {
+        Console.WriteLine($"Invalid {action} amount");
+        return false;
+    }
+    return true;
 }
