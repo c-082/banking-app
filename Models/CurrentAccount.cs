@@ -6,10 +6,7 @@ class CurrentAccount(int accountNumber) : BankAccount(accountNumber)
     public override bool Withdraw(decimal amount)
     {
         if (Balance - amount < overdraftLimit || amount <= 0)
-        {
             return false;
-        }
-
         Balance -= amount;
         return true;
     }
