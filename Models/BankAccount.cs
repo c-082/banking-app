@@ -1,11 +1,11 @@
 namespace BankingApp.Models;
 
-abstract class BankAccount(int accountNumber)
+internal abstract class BankAccount(int accountNumber)
 {
-    public int AccountNumber { get; } = accountNumber;
-    public decimal Balance { get; protected set; } = 0;
+    protected internal int AccountNumber { get; } = accountNumber;
+    protected internal decimal Balance { get; private protected set; } = 0;
 
-    public void Deposit(decimal amount) => Balance += amount;
-    public abstract bool Withdraw(decimal amount);
-    public virtual bool ApplyInterest() => false;
+    internal void Deposit(decimal amount) => Balance += amount;
+    internal abstract bool Withdraw(decimal amount);
+    internal virtual bool ApplyInterest() => false;
 }

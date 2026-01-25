@@ -1,12 +1,13 @@
 ﻿using BankingApp.Services;
 using BankingApp.Models;
+
 var bank = await Bank.Create();
 Console.WriteLine("""
                 ===========
 =============== BANKING APP ===============
                 ===========
 """);
-while(true)
+while (true)
 {
     Console.WriteLine("""
         1. Create account
@@ -18,7 +19,7 @@ while(true)
         7. Exit
     """);
     Console.Write("Choose: ");
-    switch(Console.ReadKey().KeyChar)
+    switch (Console.ReadKey().KeyChar)
     {
         case '1':
             Console.WriteLine();
@@ -50,7 +51,7 @@ while(true)
             if (depositBankAccount == null)
                 continue;
             if (!GetAmount("deposit", out decimal depositAmount))
-            depositBankAccount.Deposit(depositAmount);
+                depositBankAccount.Deposit(depositAmount);
             Console.WriteLine($"Successfully deposited {depositAmount}");
             break;
         case '3':
@@ -58,7 +59,7 @@ while(true)
             var withdrawBankAccount = GetAccount("your");
             if (withdrawBankAccount == null)
                 continue;
-            if(!GetAmount("withdraw", out decimal withdrawAmount))
+            if (!GetAmount("withdraw", out decimal withdrawAmount))
                 continue;
             if (!withdrawBankAccount.Withdraw(withdrawAmount))
             {
@@ -75,9 +76,9 @@ while(true)
             var recipientBankAccount = GetAccount("recipient's");
             if (recipientBankAccount == null)
                 continue;
-            if(!GetAmount("transfer", out decimal transferAmount))
+            if (!GetAmount("transfer", out decimal transferAmount))
                 continue;
-            if(! await bank.Transfer(senderBankAccount, recipientBankAccount, transferAmount))
+            if (!await bank.Transfer(senderBankAccount, recipientBankAccount, transferAmount))
             {
                 Console.WriteLine("Transfer failed");
                 continue;
@@ -95,7 +96,7 @@ while(true)
             var interestAccount = GetAccount("your");
             if (interestAccount == null)
                 continue;
-            if(! await bank.ApplyInterest(interestAccount))
+            if (!await bank.ApplyInterest(interestAccount))
                 Console.WriteLine("Interest can only be applied to savings account");
             break;
         case '7':
@@ -109,23 +110,23 @@ while(true)
 BankAccount? GetAccount(string name)
 {
     Console.WriteLine($"Enter {name} account number");
-        if (!int.TryParse(Console.ReadLine(), out int accountNumber))
-        {
-            Console.WriteLine("Invalid account number");
-            return null;
-        }
-        var bankAccount = bank.FindAccount(accountNumber);
-        if (bankAccount == null)
-            Console.WriteLine("Account number not found");
-        return bankAccount;
+    if (!int.TryParse(Console.ReadLine(), out int accountNumber))
+    {
+        Console.WriteLine("Invalid account number");
+        return null;
+    }
+    var bankAccount = bank.FindAccount(accountNumber);
+    if (bankAccount == null)
+        Console.WriteLine("Account number not found");
+    return bankAccount;
 }
 static bool GetAmount(string action, out decimal amount)
 {
     Console.WriteLine($"Enter the amount you'd like to {action}");
-        if (!decimal.TryParse(Console.ReadLine(), out amount))
-        {
-            Console.WriteLine($"Invalid {action} amount");
-            return false;
-        }
-        return true;
+    if (!decimal.TryParse(Console.ReadLine(), out amount))
+    {
+        Console.WriteLine($"Invalid {action} amount");
+        return false;
+    }
+    return true;
 }

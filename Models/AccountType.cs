@@ -1,6 +1,6 @@
 namespace BankingApp.Models;
 
-enum AccountType
+internal enum AccountType
 {
     Savings,
     Current

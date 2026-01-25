@@ -1,6 +1,6 @@
 namespace BankingApp.Models;
 
-class AccountData
+internal class AccountData
 {
     public int AccountNumber { get; set; }
     public decimal Balance { get; set; }
