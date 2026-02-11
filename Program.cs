@@ -1,4 +1,6 @@
-﻿using BankingApp.Services;
+﻿using System.Globalization;
+
+using BankingApp.Services;
 using BankingApp.Models;
 
 var bank = await Bank.Create();
@@ -49,35 +51,55 @@ while (true)
             Console.WriteLine();
             var depositBankAccount = GetAccount("your");
             if (depositBankAccount == null)
+            {
                 continue;
+            }
             if (!GetAmount("deposit", out decimal depositAmount))
-                depositBankAccount.Deposit(depositAmount);
-            Console.WriteLine($"Successfully deposited {depositAmount}");
+            {
+                continue;
+            }
+            depositBankAccount.Deposit(depositAmount);
+            Console.WriteLine($"Successfully deposited {depositAmount:C2}");
             break;
         case '3':
             Console.WriteLine();
             var withdrawBankAccount = GetAccount("your");
             if (withdrawBankAccount == null)
+            {
                 continue;
+            }
             if (!GetAmount("withdraw", out decimal withdrawAmount))
+            {
                 continue;
-            if (!withdrawBankAccount.Withdraw(withdrawAmount))
+            }
+            if (!withdrawBankAccount.TryWithdraw(withdrawAmount))
             {
                 Console.WriteLine("Withdrawal failed");
                 continue;
             }
-            Console.WriteLine($"Successfully deposited {withdrawAmount}");
+            Console.WriteLine($"Successfully withdrew {withdrawAmount:C2}");
             break;
         case '4':
             Console.WriteLine();
             var senderBankAccount = GetAccount("your");
             if (senderBankAccount == null)
+            {
                 continue;
+            }
             var recipientBankAccount = GetAccount("recipient's");
             if (recipientBankAccount == null)
+            {
                 continue;
+            }
+            if (Equals(senderBankAccount, recipientBankAccount))
+            {
+                Console.WriteLine("Cannot tranfer to the same account");
+                continue;
+            }
             if (!GetAmount("transfer", out decimal transferAmount))
+            {
                 continue;
+            }
             if (!await bank.Transfer(senderBankAccount, recipientBankAccount, transferAmount))
             {
                 Console.WriteLine("Transfer failed");
@@ -88,16 +110,24 @@ while (true)
             Console.WriteLine();
             var balanceAccount = GetAccount("your");
             if (balanceAccount == null)
+            {
                 continue;
-            Console.WriteLine($"Your account balance is {balanceAccount.Balance}");
+            }
+            Console.WriteLine($"Your account balance is {balanceAccount.Balance:C2}");
             break;
         case '6':
             Console.WriteLine();
             var interestAccount = GetAccount("your");
             if (interestAccount == null)
+            {
                 continue;
+            }
             if (!await bank.ApplyInterest(interestAccount))
+            {
                 Console.WriteLine("Interest can only be applied to savings account");
+                continue;
+            }
+            Console.WriteLine("Successfully applied interest");
             break;
         case '7':
             return;
@@ -117,15 +147,26 @@ BankAccount? GetAccount(string name)
     }
     var bankAccount = bank.FindAccount(accountNumber);
     if (bankAccount == null)
+    {
         Console.WriteLine("Account number not found");
+    }
     return bankAccount;
 }
 static bool GetAmount(string action, out decimal amount)
 {
     Console.WriteLine($"Enter the amount you'd like to {action}");
-    if (!decimal.TryParse(Console.ReadLine(), out amount))
+    if (!decimal.TryParse(Console.ReadLine(),
+        NumberStyles.Number,
+        CultureInfo.InvariantCulture,
+        out amount))
     {
         Console.WriteLine($"Invalid {action} amount");
+        return false;
+    }
+    amount = Math.Round(amount, 2);
+    if (amount <= 0)
+    {
+        Console.WriteLine($"The amount to {action} must be greater than 0");
         return false;
     }
     return true;

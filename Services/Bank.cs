@@ -7,15 +7,14 @@ internal class Bank
 {
     private readonly string filePath = "accounts.json";
     private readonly List<BankAccount> accounts = [];
-    internal static async Task<Bank> Create()
+    public static async Task<Bank> Create()
     {
         var bank = new Bank();
         var loadedAccounts = await bank.LoadAccounts();
         bank.accounts.AddRange(loadedAccounts);
         return bank;
     }
-
-    internal async Task<int> CreateAccount(AccountType accountType)
+    public async Task<int> CreateAccount(AccountType accountType)
     {
         int accountNumber = accounts.Count == 0 ? 1000 : accounts.Max(a => a.AccountNumber) + 1;
         BankAccount account = accountType == AccountType.Current ? new CurrentAccount(accountNumber) : new SavingsAccount(accountNumber);
@@ -23,19 +22,23 @@ internal class Bank
         await SaveAccounts(accounts);
         return accountNumber;
     }
-    internal BankAccount? FindAccount(int accountNumber) => accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
-    internal async Task<bool> Transfer(BankAccount fromAccount, BankAccount toAccount, decimal amount)
+    public BankAccount? FindAccount(int accountNumber) => accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+    public async Task<bool> Transfer(BankAccount fromAccount, BankAccount toAccount, decimal amount)
     {
-        if (!fromAccount.Withdraw(amount))
+        if (!fromAccount.TryWithdraw(amount))
+        {
             return false;
+        }
         toAccount.Deposit(amount);
         await SaveAccounts(accounts);
         return true;
     }
-    internal async Task<bool> ApplyInterest(BankAccount account)
+    public async Task<bool> ApplyInterest(BankAccount account)
     {
-        if (!account.ApplyInterest())
+        if (!account.TryApplyInterest())
+        {
             return false;
+        }
         await SaveAccounts(accounts);
         return true;
     }
@@ -61,7 +64,9 @@ internal class Bank
     private async Task<List<BankAccount>> LoadAccounts()
     {
         if (!File.Exists(filePath))
+        {
             return [];
+        }
         var json = await File.ReadAllTextAsync(filePath);
         var data = JsonSerializer.Deserialize<List<AccountData>>(json) ?? [];
         var accounts = new List<BankAccount>();
