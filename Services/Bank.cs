@@ -55,10 +55,12 @@ internal class Bank
                 _ => throw new InvalidOperationException("Invalid account type")
             }
         }).ToList();
+#pragma warning disable CA1869
         var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
         {
             WriteIndented = true
         });
+#pragma warning restore CA1869
         await File.WriteAllTextAsync(filePath, json);
     }
     private async Task<List<BankAccount>> LoadAccounts()
