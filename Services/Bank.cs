@@ -5,7 +5,11 @@ namespace BankingApp.Services;
 
 internal class Bank
 {
-    private readonly string filePath = "accounts.json";
+    private static readonly string filePath = "accounts.json";
+    private static readonly JsonSerializerOptions options = new()
+    {
+        WriteIndented = true
+    };
     private readonly List<BankAccount> accounts = [];
     public static async Task<Bank> Create()
     {
@@ -42,7 +46,7 @@ internal class Bank
         await SaveAccounts(accounts);
         return true;
     }
-    private async Task SaveAccounts(List<BankAccount> accounts)
+    private static async Task SaveAccounts(List<BankAccount> accounts)
     {
         var data = accounts.Select(a => new AccountData
         {
@@ -55,12 +59,7 @@ internal class Bank
                 _ => throw new InvalidOperationException("Invalid account type")
             }
         }).ToList();
-#pragma warning disable CA1869
-        var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
-#pragma warning restore CA1869
+        var json = JsonSerializer.Serialize(data, options);
         await File.WriteAllTextAsync(filePath, json);
     }
     private async Task<List<BankAccount>> LoadAccounts()
