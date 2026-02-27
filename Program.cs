@@ -58,7 +58,7 @@ while (true)
             {
                 continue;
             }
-            depositBankAccount.Deposit(depositAmount);
+            await bank.Deposit(depositBankAccount, depositAmount);
             Console.WriteLine($"Successfully deposited {depositAmount:C2}");
             break;
         case '3':
@@ -72,7 +72,7 @@ while (true)
             {
                 continue;
             }
-            if (!withdrawBankAccount.TryWithdraw(withdrawAmount))
+            if (!await bank.Withdraw(withdrawBankAccount, withdrawAmount))
             {
                 Console.WriteLine("Withdrawal failed");
                 continue;

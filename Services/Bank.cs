@@ -8,13 +8,14 @@ internal class Bank
     private static readonly string filePath = "accounts.json";
     private static readonly JsonSerializerOptions options = new()
     {
-        WriteIndented = true
+        WriteIndented = true,
+        IndentSize = 4
     };
     private readonly List<BankAccount> accounts = [];
     public static async Task<Bank> Create()
     {
         var bank = new Bank();
-        var loadedAccounts = await bank.LoadAccounts();
+        var loadedAccounts = await LoadAccounts();
         bank.accounts.AddRange(loadedAccounts);
         return bank;
     }
@@ -34,6 +35,20 @@ internal class Bank
             return false;
         }
         toAccount.Deposit(amount);
+        await SaveAccounts(accounts);
+        return true;
+    }
+    public async Task Deposit(BankAccount account, decimal amount)
+    {
+        account.Deposit(amount);
+        await SaveAccounts(accounts);
+    }
+    public async Task<bool> Withdraw(BankAccount account, decimal amount)
+    {
+        if (!account.TryWithdraw(amount))
+        {
+            return false;
+        }
         await SaveAccounts(accounts);
         return true;
     }
@@ -62,7 +77,7 @@ internal class Bank
         var json = JsonSerializer.Serialize(data, options);
         await File.WriteAllTextAsync(filePath, json);
     }
-    private async Task<List<BankAccount>> LoadAccounts()
+    private static async Task<List<BankAccount>> LoadAccounts()
     {
         if (!File.Exists(filePath))
         {
