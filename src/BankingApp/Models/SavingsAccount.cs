@@ -1,6 +1,6 @@
 namespace BankingApp.Models;
 
-internal class SavingsAccount(int accountNumber) : BankAccount(accountNumber)
+class SavingsAccount(int accountNumber) : BankAccount(accountNumber)
 {
     public override bool TryWithdraw(decimal amount)
     {
